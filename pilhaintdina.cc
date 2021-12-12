@@ -1,23 +1,20 @@
 #include <iostream>
+#include <stdlib.h>
 #include <sstream>
 
 using namespace std;
 
 class PilhaInt{
     public:
-
         PilhaInt(int valor);
-        PilhaInt();
+        ~PilhaInt();
         void empilha(int valor);
         int desempilha();
         int capacidade();
+        void redimensiona(int valor);
         bool cheio();
         bool vazio();
         void print(ostream& o);
-        
-        ~PilhaInt() {
-            free(tab);
-        }
         
         
         PilhaInt& operator << (int valor){
@@ -38,18 +35,15 @@ class PilhaInt{
         int tamanho;
 };
 
-PilhaInt::PilhaInt(){
-    tab = (int*) malloc(sizeof(int*)*10);
-    this->tamanho = 10;
-    this->atual = 0;
-}
-
-PilhaInt::PilhaInt(int valor){
+PilhaInt::PilhaInt(int valor = 10){
     tab = (int*) malloc(sizeof(int*)*valor);
     this->tamanho = valor;
     this->atual = 0;
 }
 
+PilhaInt::~PilhaInt(){
+        free(tab);
+}
 
 int PilhaInt::capacidade(){
     return this->tamanho;
@@ -65,7 +59,7 @@ bool PilhaInt::vazio(){
 
 void PilhaInt::empilha(int valor){
     if(cheio()){
-        cout << "overflow" << endl;
+        redimensiona(2*this->tamanho);
     }else{
         this->tab[this->atual] = valor;
         this->atual++;
@@ -82,10 +76,21 @@ int PilhaInt::desempilha(){
     return this->tab[this->atual];
 }
 
+void PilhaInt::redimensiona(int valor){
+    if(valor < this->atual){
+        int retiradas = this->atual - valor;
+        for(int i = 0 ; i < retiradas ; i++)
+            this->desempilha();
+     }else{
+        this->tab = (int*) realloc(tab, sizeof(int) * valor);
+    }
+    this->tamanho = valor;
+}
+
 void PilhaInt::print(ostream& o){
     o << "[ ";
     o << this->tab[0];
    for(int i  = 1 ; i < this->atual ; i++)
-         o << ", " << this->tab[i];
+        o << ", " << this->tab[i];
     o << " ]";
 }
