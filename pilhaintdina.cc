@@ -7,6 +7,7 @@ using namespace std;
 class PilhaInt{
     public:
         PilhaInt(int valor);
+        PilhaInt(const PilhaInt &p);
         ~PilhaInt();
         void empilha(int valor);
         int desempilha();
@@ -23,9 +24,15 @@ class PilhaInt{
         }
         
         const PilhaInt& operator = ( const PilhaInt& p ){
-            atual = p.atual;
-            for(int i = 0 ; i < atual ; i++)
-                tab[i] = p.tab[i];
+            if(this != &p){
+            this->tamanho = p.tamanho;
+            this->atual = p.atual;
+            free(this->tab);
+            this->tab = (int*) malloc(sizeof(int*) * this->tamanho);
+            for(int i = 0 ; i < this->atual ; i++){
+                this->tab[i] = p.tab[i];
+                }
+            }
             return *this;
         }
 
@@ -41,8 +48,17 @@ PilhaInt::PilhaInt(int valor = 10){
     this->atual = 0;
 }
 
+PilhaInt::PilhaInt(const PilhaInt &p){
+    this->tamanho = p.tamanho;
+    this->atual = p.atual;
+    this->tab = (int*) malloc(sizeof(int*)*this->tamanho);
+    for(int i = 0 ; i<this->atual; i++){
+        this->tab[i] = p.tab[i];
+    }
+}
+
 PilhaInt::~PilhaInt(){
-        free(tab);
+    free(tab);
 }
 
 int PilhaInt::capacidade(){
@@ -84,7 +100,7 @@ void PilhaInt::redimensiona(int valor){
         for(int i = 0 ; i < retiradas ; i++)
             this->desempilha();
      }else{
-        this->tab = (int*) realloc(tab, sizeof(int) * valor);
+        this->tab = (int*) realloc(tab, sizeof(int*) * valor);
     }
     this->tamanho = valor;
 }
