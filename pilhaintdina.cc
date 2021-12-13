@@ -50,7 +50,7 @@ int PilhaInt::capacidade(){
 }
 
 bool PilhaInt::cheio(){
-    return this->atual == this->tamanho;
+        return this->atual == this->tamanho;
 }
 
 bool PilhaInt::vazio(){
@@ -60,10 +60,12 @@ bool PilhaInt::vazio(){
 void PilhaInt::empilha(int valor){
     if(cheio()){
         redimensiona(2*this->tamanho);
+        this->tab[this->atual] = valor;
+
     }else{
         this->tab[this->atual] = valor;
-        this->atual++;
     }
+    this->atual++;
 }
 
 int PilhaInt::desempilha(){
@@ -90,7 +92,7 @@ void PilhaInt::redimensiona(int valor){
 void PilhaInt::print(ostream& o){
     o << "[ ";
     o << this->tab[0];
-   for(int i  = 1 ; i < this->atual ; i++)
-        o << ", " << this->tab[i];
+    for(int i  = 1 ; i < this->atual ; i++)
+            o << ", " << this->tab[i];
     o << " ]";
 }
