@@ -1,6 +1,7 @@
 #include <type_traits>
 #include <algorithm>
 #include <functional>
+#include <string>
 
 using namespace std;
 template<typename T1,typename T2>
