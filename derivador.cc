@@ -7,12 +7,32 @@ using namespace std;
 template< typename E , typename Dx>
 struct Expr{
     Expr(E e , Dx dx): e(e), dx(dx){}
+    template<typename E2, typename Dx2, typename E3, typename Dx3>
+    auto operator()(Expr<E2,Dx2> g) const {// sin(x) | sin(g(x))
+        return Expr<E3,Dx3>{[*this,g](double v){return e(g.e(v));},[*this,g](double v){return {g.dx(v) * dx(g.e(v))};}};
+    }
     E e;
     Dx dx;
 };
 
 auto x = Expr{ [] (double v){return v;},[](double v ){return 1;}};
 auto Cte = Expr{[](double c){return [c](double v){return c;};},[](double c){return [c](double v){return 0;};}};
+
+
+template<typename E, typename Dx>
+auto sin(Expr<E,Dx> g){
+    return Expr{ [g] (double v){return sin(g.e(v));},[g](double v ){return g.dx(v) * cos(g.e(v));}};
+}
+
+template<typename E , typename Dx>
+auto cos(Expr<E,Dx> g){
+    return Expr{[g](double v){return cos(g.e(v));},[g](double v){return g.dx(v) * -sin(g.e(v));}};
+}
+
+template<typename E, typename Dx>
+auto log(Expr<E,Dx> g){
+    return Expr{ [g] (double v){return std::log(g.e(v));},[g](double v ){return g.dx(v) * 1/g.e(v);}};
+}
 
 template <typename T1, typename T2>
 auto operator+(T1 a , T2 b){
@@ -59,6 +79,8 @@ auto operator/ ( T1 a , T2 b){  // a/b.dx  a/b   a/b.dx   a.dx/b
 }
 
 int main(){
-    auto f = x*x*x*(8+x)+x;
-    cout << f.dx(1.1);
+    
+    auto f = sin( x * x - cos( 3.14 * x + 1.0 ));
+    cout << f.e(3.14) << endl;
+    cout << f.dx(3.14) << endl;
 }
