@@ -7,10 +7,6 @@ using namespace std;
 template< typename E , typename Dx>
 struct Expr{
     Expr(E e , Dx dx): e(e), dx(dx){}
-    template<typename E2, typename Dx2, typename E3, typename Dx3>
-    auto operator()(Expr<E2,Dx2> g) const {// sin(x) | sin(g(x))
-        return Expr<E3,Dx3>{[*this,g](double v){return e(g.e(v));},[*this,g](double v){return {g.dx(v) * dx(g.e(v))};}};
-    }
     E e;
     Dx dx;
 };
@@ -78,9 +74,9 @@ auto operator/ ( T1 a , T2 b){  // a/b.dx  a/b   a/b.dx   a.dx/b
     }
 }
 
-int main(){
-    
-    auto f = sin( x * x - cos( 3.14 * x + 1.0 ));
-    cout << f.e(3.14) << endl;
-    cout << f.dx(3.14) << endl;
+
+template<typename T1, typename T2>
+auto operator->*(T1 a, T2 b){
+    static_assert( std::is_same_v< int, T2 >, "Operador de potenciação definido apenas para inteiros" );
+    return Expr{[a,b](double v ){ return pow(a.e(v),b);},[a,b](double v ){ return b * pow(a.e(v),(b-1));}};
 }
