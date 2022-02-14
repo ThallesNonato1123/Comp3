@@ -30,6 +30,12 @@ auto log(Expr<E,Dx> g){
     return Expr{ [g] (double v){return std::log(g.e(v));},[g](double v ){return g.dx(v) * 1/g.e(v);}};
 }
 
+template<typename E, typename Dx>
+auto exp(Expr<E,Dx> g){
+    return Expr{ [g] (double v){return exp(g.e(v));},[g](double v ){return g.dx(v) * exp(g.e(v));}};
+}
+
+
 template <typename T1, typename T2>
 auto operator+(T1 a , T2 b){
     if constexpr(is_arithmetic<decltype(a)>::value && is_class<decltype(b)>::value){
