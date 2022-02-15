@@ -69,10 +69,17 @@ auto operator* ( T1 a , T2 b){
     }
 }
 
+template<typename E, typename Dx, typename T1>
+auto operator->*(Expr<E,Dx> g, T1 b){
+    static_assert( std::is_same_v< int, T1 >, "Operador de potenciação definido apenas para inteiros" );
+    return Expr{[g,b](double v ){ return pow(g.e(v),b);},[g,b](double v ){ return (g.dx(v) *b * pow(g.e(v),(b-1)));}};
+}
+
+
 template <typename T1, typename T2>
 auto operator/ ( T1 a , T2 b){  // a/b.dx  a/b   a/b.dx   a.dx/b
     if constexpr(is_arithmetic<decltype(a)>::value && is_class<decltype(b)>::value){
-        return Expr{[a,b](double v){return Cte.e(a)(a) / b.e(v);}, [a,b](double v){return Cte.e(a)(a) / b.dx(v);}};
+        return Expr{[a,b](double v){return Cte.e(a)(a) / b.e(v);}, [a,b](double v){return (Cte.dx(a)(a) * b.e(v) -b.dx(v) * Cte.e(a)(a))/ pow(b.e(v),2);}};
     }else if constexpr(is_arithmetic<decltype(b)>::value && is_class<decltype(a)>::value){
         return Expr{[a,b](double v){return a.e(v)/Cte.e(b)(b);}, [a,b](double v){return a.dx(v) / Cte.e(b)(b);}};
     }else{
@@ -80,9 +87,8 @@ auto operator/ ( T1 a , T2 b){  // a/b.dx  a/b   a/b.dx   a.dx/b
     }
 }
 
-
-template<typename T1, typename T2>
-auto operator->*(T1 a, T2 b){
-    static_assert( std::is_same_v< int, T2 >, "Operador de potenciação definido apenas para inteiros" );
-    return Expr{[a,b](double v ){ return pow(a.e(v),b);},[a,b](double v ){ return b * pow(a.e(v),(b-1));}};
+int main(){
+    double v = 3.14159;
+    auto f =  sin(x)/cos(x);
+    cout << f.dx(v);
 }
