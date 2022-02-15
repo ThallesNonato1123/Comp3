@@ -86,9 +86,3 @@ auto operator/ ( T1 a , T2 b){  // a/b.dx  a/b   a/b.dx   a.dx/b
     return Expr{[a,b](double v){return a.e(v) / b.e(v);},[a,b](double v){return (a.dx(v) * b.e(v) - b.dx(v) * a.e(v)) / pow(b.e(v),2);}};
     }
 }
-
-int main(){
-    double v = 3.14159;
-    auto f =  sin(x)/cos(x);
-    cout << f.dx(v);
-}
