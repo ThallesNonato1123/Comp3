@@ -30,6 +30,16 @@ auto bind(Function f){
 }
 
 
+template<typename Function,typename ...Args>
+
+auto bind(Bind<Function> f, Args ...args){
+     if constexpr(is_invocable_v<Function,Args...>)
+                return invoke(f->f, args...);
+            else{
+                return [f, args...](auto ...resto){ return invoke(f.f,args...,resto...); };
+            }
+}
+
 template<typename Function, typename ...Args>
 auto bind(Function f, Args ...args){
      if constexpr(is_invocable_v<Function,Args...>)
@@ -39,10 +49,11 @@ auto bind(Function f, Args ...args){
             }
 }
 
-
 int mdc( int a, int b ) { return b == 0 ? a : mdc( b, a%b ); };
 
 int main(){
-    auto f2 = bind( mdc,12);
-    cout << f2(9);
+    auto f2 = bind( mdc );
+    auto f1 = bind( f2, 12 );
+    for( int i = 2; i <= 12; i++ )
+        cout << f1( i ) <<  " ";
 }
