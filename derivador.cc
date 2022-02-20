@@ -70,13 +70,6 @@ auto operator* ( T1 a , T2 b){
     }
 }
 
-template<typename E, typename Dx, typename T1>
-auto operator->*(Expr<E,Dx> g, T1 b){
-    static_assert( std::is_same_v< int, T1 >, "Operador de potenciação definido apenas para inteiros" );
-    return Expr{[g,b](double v ){ return pow(g.e(v),b);},[g,b](double v ){ return (g.dx(v) *b * pow(g.e(v),(b-1)));}};
-}
-
-
 template <typename T1, typename T2>
 auto operator/ ( T1 a , T2 b){  // a/b.dx  a/b   a/b.dx   a.dx/b
     if constexpr(is_arithmetic<decltype(a)>::value && is_class<decltype(b)>::value){
@@ -86,4 +79,11 @@ auto operator/ ( T1 a , T2 b){  // a/b.dx  a/b   a/b.dx   a.dx/b
     }else{
     return Expr{[a,b](double v){return a.e(v) / b.e(v);},[a,b](double v){return (a.dx(v) * b.e(v) - b.dx(v) * a.e(v)) / pow(b.e(v),2);}};
     }
+}
+
+
+template<typename E, typename Dx, typename T1>
+auto operator->*(Expr<E,Dx> g, T1 b){
+    static_assert( std::is_same_v< int, T1 >, "Operador de potenciação definido apenas para inteiros" );
+    return Expr{[g,b](double v ){ return pow(g.e(v),b);},[g,b](double v ){ return (g.dx(v) *b * pow(g.e(v),(b-1)));}};
 }
