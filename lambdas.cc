@@ -58,7 +58,8 @@ auto operator<<(OStream<A> a, const char &c){
 template <typename T1, typename T2> auto operator+(T1 a, T2 b) {
   if constexpr (is_arithmetic<decltype(a)>::value){
     return Expr{[a, b](auto v) { return a + b(v); }};
-  } else if constexpr (is_arithmetic<decltype(b)>::value && is_class<decltype(a)>::value) {
+  } else if constexpr (is_arithmetic<decltype(b)>::value) {
+    printf("oi");
     return Expr{[a, b](auto v) { return b + a(v); }};
   } else {
     return Expr{[a, b](auto v) { return a(v) + b(v); }};
@@ -129,6 +130,6 @@ auto operator==(Expr<A> a, B b){
 };
 
 int main() {
-    string v1[] = { "a", "b2", "cc3", "saci" };
-    v1 | []( string n ) { return n.length() % 2 == 0; } | (x+x) | cout << x << ' ';
+    auto s = x + 2;
+    cout << s(2);
 }
